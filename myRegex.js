@@ -29,9 +29,17 @@ come sono.
 Provate a descrivere il pattern che distingue tra questi due tipi di virgolette e impostate una
 chiamata al metodo replace che effettui le sostituzioni correttamente.*/
 
-const story = "Ciao ma quanto sei 'bello', no l'ho sei t'u, no 'davvero', si'no";
+let story = "Ciao ma quanto sei 'bello', no l'ho sei t'u, no 'davvero', si'no";
 
-console.log(story.replace(/'/gi,"\""));
+const newR = /(\s\'([a-zA-Z]){1,}\'\,|\s\'([a-zA-Z]){1,}\'\s)/g;
+
+let n;
+while ((n = newR.exec(story)) != null) {
+    let box = n[0].replace(/\'/g,"\"");
+    story = story.replace(n[0], box);
+}
+
+console.log(story);
 
 /*Ancora numeri
 Scrivete un’espressione che trovi solo i numeri espressi in stile JavaScript. Dovete prevedere la
@@ -41,12 +49,13 @@ Notate che non è obbligatorio che ci siano cifre davanti o dopo il punto, ma il
 essere da solo. In altre parole, .5 e 5. sono numeri validi in JavaScript, ma un punto solitario non
 lo è. */
 
+/*
 const tantiNumeri = "DEGFVse . .f, 45,6 56.4 4. rg g 56.6 h.78 5e-3 6e-23sgg 1E10 . . .67";
 
 const rg = /(\d+\.\d+|\d+\.|\.\d+|\d+e-\d+|\d+E\d+|\d+)/g;
 
-const r =/\d/g;
 let m;
 while ((m = rg.exec(tantiNumeri)) != null) {
     console.log(m[0]);
 }
+*/
