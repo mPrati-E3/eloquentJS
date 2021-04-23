@@ -24,9 +24,18 @@ obiettivo.*/
 
 
 function skipSpace(string) {
-    let first = string.search(/\S/);
-    if (first == -1) return "";
-    return string.slice(first);
+
+    let first = string.search(/[^\s]/);
+
+    let stringaRitornata = string.slice(first);
+
+    let second = stringaRitornata.search(/[^\#]/);
+
+    let stringaRitornata2 = stringaRitornata.slice(second);
+
+    if (first == -1 || second == -1) return "";
+
+    return stringaRitornata2;
 }
 
 function parseApply(expr, program) {
@@ -130,6 +139,15 @@ specialForms.define = (args, scope) => {
     return value;
 };
 
+specialForms.set = (args, scope) => {
+    if (args.length != 2 || args[0].type != "word") {
+        throw new SyntaxError("Incorrect use of set");
+    }
+    let value = evaluate(args[1], scope);
+    scope[args[0].name] = value;
+    return value;
+};
+
 /*Sistemare l’ambito di visibilità
 Attualmente, l’unico modo per assegnare un valore a una variabile è define. Questo costrutto
 consente sia di definire nuove variabili, sia di assegnare un valore a quelle esistenti.
@@ -170,7 +188,7 @@ function run(program) {
 }
 
 run(`
-    do(define(total, 0),
+    do(define(total, 0),   
     define(count, 1),
     while(<(count, 11),
     do(define(total, +(total, count)),
