@@ -68,6 +68,9 @@ CanvasDisplay.prototype.clearDisplay = function(status) {
 let otherSprites = document.createElement("img");
 otherSprites.src = "sprites.png";
 
+let monsterSprite = document.createElement("img");
+monsterSprite.src = "monster.png";
+
 CanvasDisplay.prototype.drawBackground = function(level) {
     let {left, top, width, height} = this.viewport;
     let xStart = Math.floor(left);
@@ -120,6 +123,9 @@ CanvasDisplay.prototype.drawActors = function(actors) {
         let y = (actor.pos.y - this.viewport.top) * scale;
         if (actor.type == "player") {
             this.drawPlayer(actor, x, y, width, height);
+        } else if (actor.type == "monster"){
+            let tileY = 0;
+            this.cx.drawImage(monsterSprite, tileY, 0, width, height, x, y, width, height);
         } else {
             let tileX = (actor.type == "coin" ? 2 : 1) * scale;
             this.cx.drawImage(otherSprites, tileX, 0, width, height, x, y, width, height);

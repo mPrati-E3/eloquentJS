@@ -17,4 +17,4 @@ class Monster {
     }
 }
 
-Monster.prototype.size = new Vec(1.2, 2);
+Monster.prototype.size = new Vec(1, 2);
