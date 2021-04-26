@@ -13,30 +13,10 @@ function parseExpression(program) {
     return parseApply(expr, program.slice(match[0].length));
 }
 
-/*Commenti
-Sarebbe bello poter scrivere dei commenti in Egg. Per esempio, quando incontriamo un segno #
-potremmo trattare il resto della riga come un commento e ignorarlo, come facciamo con // in
-JavaScript.
-Non servono grandi modifiche al parser per ottenere questo risultato. Basta modificare
-skipSpace in modo che salti i commenti come se fossero spazio vuoto, in modo che tutte le
-posizioni dove si richiama skipSpace saltino anche i commenti. Modificate il parser con questo
-obiettivo.*/
-
-
 function skipSpace(string) {
-
-    let first = string.search(/[^\s]/);
-
-    let stringaRitornata = string.slice(first);
-
-    let second = stringaRitornata.search(/[^\#]/);
-
-    let stringaRitornata2 = stringaRitornata.slice(second);
-
-    if (first == -1 || second == -1) return "";
-
-    return stringaRitornata2;
-}
+    let skippable = string.match(/^(\s|#.*)*/);
+    return string.slice(skippable[0].length);
+  }
 
 function parseApply(expr, program) {
     program = skipSpace(program);
@@ -83,7 +63,7 @@ function evaluate(expr, scope) {
         if (expr.name in scope) {
             return scope[expr.name];
         } else {
-            throw new ReferenceError('Undefined binding: ${expr.name}');
+            throw new ReferenceError(`Undefined binding: ${expr.name}`);
         }
     } else if (expr.type == "apply") {
         let {operator, args} = expr;
@@ -139,36 +119,26 @@ specialForms.define = (args, scope) => {
     return value;
 };
 
-specialForms.set = (args, scope) => {
-    if (args.length != 2 || args[0].type != "word") {
-        throw new SyntaxError("Incorrect use of set");
-    }
-    let value = evaluate(args[1], scope);
-    scope[args[0].name] = value;
-    return value;
-};
-
-/*Sistemare l’ambito di visibilità
-Attualmente, l’unico modo per assegnare un valore a una variabile è define. Questo costrutto
-consente sia di definire nuove variabili, sia di assegnare un valore a quelle esistenti.
-Quest’ambiguità crea un problema. Quando cercate di assegnare un nuovo valore a una
-variabile non locale, finite col definirne invece una locale con lo stesso nome. Alcuni linguaggi
-funzionano così per definizione, ma mi sembra proprio un modo sciocco di gestire l’ambito di
-visibilità.
-Aggiungete un modello speciale set, simile a define, che assegni un nuovo valore a una
-variabile, aggiornandola in un ambito esterno se già non esiste in quello interno. Se la variabile
-non è stata definita, fate in modo che venga lanciato un errore ReferenceError (che è un altro tipo
-di errore standard).
-La tecnica di rappresentare gli ambiti di visibilità come semplici oggetti, che ci è tornata
-tanto comoda finora, a questo punto vi darà un po’ fastidio. Potete provare a usare la funzione
-Object.getPrototypeOf, che restituisce il prototipo di un oggetto. Ricordatevi inoltre che, dal
-momento che gli ambiti di visibilità non derivano da Object.prototype, se volete richiamare su di
-essi hasOwnProperty dovrete usare la seguente espressione:
-Object.prototype.hasOwnProperty.call(scope, name);*/
-
 const topScope = Object.create(null);
 topScope.true = true;
 topScope.false = false;
+
+specialForms.set = (args, env) => {
+    if (args.length != 2 || args[0].type != "word") {
+      throw new SyntaxError("Bad use of set");
+    }
+    let varName = args[0].name;
+    let value = evaluate(args[1], env);
+  
+    for (let scope = env; scope; scope = Object.getPrototypeOf(scope)) {
+      if (Object.prototype.hasOwnProperty.call(scope, varName)) {
+        scope[varName] = value;
+        return value;
+      }
+    }
+    throw new ReferenceError(`Setting undefined variable ${varName}`);
+};
+
 
 let prog = parse('if(true, false, true)');
 console.log(evaluate(prog, topScope));
@@ -188,7 +158,7 @@ function run(program) {
 }
 
 run(`
-    do(define(total, 0),   
+    do(define(total, 0),   #pippo
     define(count, 1),
     while(<(count, 11),
     do(define(total, +(total, count)),
@@ -242,11 +212,31 @@ print(f(4)(5)))
 `);
 // → 9
 
-/*Array
-Aggiungete il supporto per gli array a Egg, aggiungendo le seguenti tre funzioni all’ambito
-superiore: array(...values) per costruire un array contenente i valori degli argomenti,
-length(array) per recuperare la lunghezza di un array ed element(array, n) per recuperare
-l’elemento in posizione n. */
+topScope.array = (...values) => values;
+
+topScope.length = array => array.length;
+
+topScope.element = (array, i) => array[i];
+
+run(`
+do(define(sum, fun(array,
+     do(define(i, 0),
+        define(sum, 0),
+        while(<(i, length(array)),
+          do(define(sum, +(sum, element(array, i))),
+             define(i, +(i, 1)))),
+        sum))),
+   print(sum(array(1, 2, 3))))
+`);
+// → 6
+
+run(`
+do(define(x, 4),
+   define(setx, fun(val, set(x, val))),
+   setx(50),
+   print(x))
+`);
+// → 50
 
 
     
