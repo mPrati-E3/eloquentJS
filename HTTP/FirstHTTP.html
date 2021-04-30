@@ -1,0 +1,23 @@
+<script defer src="myFirstHTTP.js"></script>
+<script defer src="gameOfLife.js"></script>
+
+<textarea id="code">return "hi";</textarea>
+<button id="button">Run</button>
+<pre id="output"></pre>
+
+<div id="grid"></div>
+<button id="next">Next generation</button>
+<button id="run">Auto run</button>
+
+<script defer>
+  document.querySelector("#button").addEventListener("click", () => {
+    let code = document.querySelector("#code").value;
+    let outputNode = document.querySelector("#output");
+    try {
+      let result = Function(code)();
+      outputNode.innerText = String(result);
+    } catch (e) {
+      outputNode.innerText = "Error: " + e;
+    }
+  });
+</script>
