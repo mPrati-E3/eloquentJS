@@ -24,7 +24,7 @@ function startPixelEditor({state = startState,tools = baseTools,controls = baseC
 
 let dom = startPixelEditor({
     tools: {draw, line, circle, fill, rectangle, pick}
-  });
+});
 
 document.querySelector("div").appendChild(dom);
 

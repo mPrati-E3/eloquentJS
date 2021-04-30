@@ -14,12 +14,11 @@ class PixelEditor {
 
       this.controls = controls.map(Control => new Control(state, config));
 
-      this.dom = elt("div", {
-        tabIndex: 0,
-        onkeydown: event => this.keyDown(event, config)
-      }, this.canvas.dom, elt("br"),
-         ...this.controls.reduce(
-           (a, c) => a.concat(" ", c.dom), []));
+      this.dom = elt(
+        "div", 
+        {tabIndex: 0, onkeydown: event => this.keyDown(event, config)}, this.canvas.dom, elt("br"),
+        ...this.controls.reduce((a, c) => a.concat(" ", c.dom), [])
+      );
     }
 
     keyDown(event, config) {
@@ -50,11 +49,7 @@ class ToolSelect {
         this.select = elt(
                         "select", 
                         {onchange: () => dispatch({tool: this.select.value})},
-                         ...Object.keys(tools).map(name => elt("option", {
-                                                                selected: name == state.tool
-                                                                }, 
-                                                                name)
-                                                    )
+                        ...Object.keys(tools).map(name => elt("option", {selected: name == state.tool}, name))
                         );
     this.dom = elt("label", null, "✍️ Tool: ", this.select);
     }

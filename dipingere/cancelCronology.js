@@ -17,6 +17,7 @@ function historyUpdateState(state, action) {
 }
 
 class UndoButton {
+    
     constructor(state, {dispatch}) {
         this.dom = elt("button", {
             onclick: () => dispatch({undo: true}),

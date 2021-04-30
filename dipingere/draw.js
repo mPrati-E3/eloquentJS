@@ -53,9 +53,13 @@ function pick(pos, state, dispatch) {
 }
 
 function circle(pos, state, dispatch) {
+
     function drawCircle(to) {
-      let radius = Math.sqrt(Math.pow(to.x - pos.x, 2) +
-                             Math.pow(to.y - pos.y, 2));
+      let radius = Math.sqrt(
+        Math.pow(to.x - pos.x, 2) +
+        Math.pow(to.y - pos.y, 2)
+      );
+
       let radiusC = Math.ceil(radius);
       let drawn = [];
       for (let dy = -radiusC; dy <= radiusC; dy++) {
@@ -63,19 +67,21 @@ function circle(pos, state, dispatch) {
           let dist = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
           if (dist > radius) continue;
           let y = pos.y + dy, x = pos.x + dx;
-          if (y < 0 || y >= state.picture.height ||
-              x < 0 || x >= state.picture.width) continue;
+          if (y < 0 || y >= state.picture.height || x < 0 || x >= state.picture.width) continue;
           drawn.push({x, y, color: state.color});
         }
       }
+
       dispatch({picture: state.picture.draw(drawn)});
     }
-    drawCircle(pos);
-    return drawCircle;
-  }
 
-  function drawLine(from, to, color) {
-    let points = [];
+    drawCircle(pos);
+
+    return drawCircle;
+}
+
+function drawLine(from, to, color) {
+  let points = [];
     if (Math.abs(from.x - to.x) > Math.abs(from.y - to.y)) {
       if (from.x > to.x) [from, to] = [to, from];
       let slope = (to.y - from.y) / (to.x - from.x);
@@ -91,14 +97,14 @@ function circle(pos, state, dispatch) {
         x += slope;
       }
     }
-    return points;
-  }
+  return points;
+}
 
-  function line(pos, state, dispatch) {
-    return end => {
-      let line = drawLine(pos, end, state.color);
-      dispatch({picture: state.picture.draw(line)});
-    };
-  }
+function line(pos, state, dispatch) {
+  return end => {
+    let line = drawLine(pos, end, state.color);
+    dispatch({picture: state.picture.draw(line)});
+  };
+}
     
     

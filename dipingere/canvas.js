@@ -18,9 +18,8 @@ class PictureCanvas {
 }
 
 function drawPicture(picture, canvas, scale, previous) {
-    if (previous == null ||
-        previous.width != picture.width ||
-        previous.height != picture.height) {
+
+    if (previous == null || previous.width != picture.width || previous.height != picture.height) {
       canvas.width = picture.width * scale;
       canvas.height = picture.height * scale;
       previous = null;
@@ -36,7 +35,8 @@ function drawPicture(picture, canvas, scale, previous) {
         }
       }
     }
-  }
+    
+}
 
 PictureCanvas.prototype.mouse = function(downEvent, onDown) {
     if (downEvent.button != 0) return;
@@ -87,5 +87,5 @@ PictureCanvas.prototype.syncState = function(picture) {
     if (this.picture == picture) return;
     drawPicture(picture, this.dom, scale, this.picture);
     this.picture = picture;
-  }
+}
     
