@@ -1,14 +1,7 @@
+<script defer src="drawLayout.js"></script>
+<script defer src="fast.js"></script>
+<script defer src="pathfinding.js"></script>
+<script defer src="timing.js"></script>
+<script defer src="optimizing.js"></script>
 
-<script>
-    runLayout(forceDirected_simple, treeGraph(4, 4));
-
-    pos.plus(normalized.times(forceSize));
-
-    let mangledGraph = treeGraph(4, 4);
-    for (let node of mangledGraph) {
-        node[`p${Math.floor(Math.random() * 999)}`] = true;
-    }
-    runLayout(forceDirected_noVector, mangledGraph);
-
-
-</script>
+<script defer src="launcher.js"></script>
