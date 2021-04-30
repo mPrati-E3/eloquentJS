@@ -1,23 +1,47 @@
 class PixelEditor {
 
     constructor(state, config) {
-        let {tools, controls, dispatch} = config;
-        this.state = state;
-        this.canvas = new PictureCanvas(state.picture, pos => {
-            let tool = tools[this.state.tool];
-            let onMove = tool(pos, this.state, dispatch);
-            if (onMove) return pos => onMove(pos, this.state);
-        });
+      let {tools, controls, dispatch} = config;
+      this.state = state;
 
-        this.controls = controls.map(Control => new Control(state, config));
-        this.dom = elt("div", {}, this.canvas.dom, elt("br"), ...this.controls.reduce( (a, c) => a.concat(" ", c.dom), []));
+      this.canvas = new PictureCanvas(state.picture, pos => {
+        let tool = tools[this.state.tool];
+        let onMove = tool(pos, this.state, dispatch);
+        if (onMove) {
+          return pos => onMove(pos, this.state, dispatch);
+        }
+      });
+
+      this.controls = controls.map(Control => new Control(state, config));
+
+      this.dom = elt("div", {
+        tabIndex: 0,
+        onkeydown: event => this.keyDown(event, config)
+      }, this.canvas.dom, elt("br"),
+         ...this.controls.reduce(
+           (a, c) => a.concat(" ", c.dom), []));
+    }
+
+    keyDown(event, config) {
+      if (event.key == "z" && (event.ctrlKey || event.metaKey)) {
+        event.preventDefault();config.dispatch({undo: true});
+      } else if (!event.ctrlKey && !event.metaKey && !event.altKey) {
+        for (let tool of Object.keys(config.tools)) {
+          if (tool[0] == event.key) {
+            event.preventDefault();
+            config.dispatch({tool});
+            return;
+          }
+        }
+      }
     }
 
     syncState(state) {
-        this.state = state;
-        this.canvas.syncState(state.picture);
-        for (let ctrl of this.controls) ctrl.syncState(state);
+      this.state = state;
+      this.canvas.syncState(state.picture);
+      for (let ctrl of this.controls) ctrl.syncState(state);
     }
+
 }
 
 class ToolSelect {
@@ -32,7 +56,7 @@ class ToolSelect {
                                                                 name)
                                                     )
                         );
-    this.dom = elt("label", null, /*immagine pennello*/" Tool: ", this.select);
+    this.dom = elt("label", null, "✍️ Tool: ", this.select);
     }
     syncState(state) { this.select.value = state.tool; }
 }
@@ -47,7 +71,7 @@ class ColorSelect {
                             onchange: () => dispatch({color: this.input.value })
                         });
 
-        this.dom = elt("label", null,/*immagine tavolozza*/" Color: ", this.input);
+        this.dom = elt("label", null,"🌈 Color: ", this.input);
     }
     
     syncState(state) { this.input.value = state.color; }

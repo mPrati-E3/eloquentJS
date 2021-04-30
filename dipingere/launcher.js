@@ -1,5 +1,3 @@
-//document.body.appendChild(elt("button", {onclick: () => console.log("click")}, "The button"));
-
 const startState = {
     tool: "draw",
     color: "#000000",
@@ -24,6 +22,10 @@ function startPixelEditor({state = startState,tools = baseTools,controls = baseC
     return app.dom;
 }
 
-document.querySelector("div").appendChild(startPixelEditor({}));
+let dom = startPixelEditor({
+    tools: {draw, line, circle, fill, rectangle, pick}
+  });
+
+document.querySelector("div").appendChild(dom);
 
     

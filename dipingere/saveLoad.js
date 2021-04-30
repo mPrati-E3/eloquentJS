@@ -2,7 +2,7 @@ class SaveButton {
 
     constructor(state) {
         this.picture = state.picture;
-        this.dom = elt("button", {onclick: () => this.save()}, /*icona salvataggio*/" Save");
+        this.dom = elt("button", {onclick: () => this.save()}, "💾 Save");
     }
 
     save() {
@@ -20,7 +20,7 @@ class SaveButton {
 class LoadButton {
 
     constructor(_, {dispatch}) {
-        this.dom = elt("button", {onclick: () => startLoad(dispatch)},/*Load icon*/" Load");
+        this.dom = elt("button", {onclick: () => startLoad(dispatch)},"📁 Load");
     }
 
     syncState() {}

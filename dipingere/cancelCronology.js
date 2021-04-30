@@ -21,7 +21,7 @@ class UndoButton {
         this.dom = elt("button", {
             onclick: () => dispatch({undo: true}),
             disabled: state.done.length == 0
-        },/*undo icon*/" Undo");
+        },"❌ Undo");
     }
 
     syncState(state) {
